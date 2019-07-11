@@ -43,10 +43,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import java.math.BigInteger;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -59,6 +56,7 @@ public class ParallelCollectorsTest {
         Options options = new OptionsBuilder()
                 .include(ParallelCollectorsTest.class.getSimpleName())
                 .forks(1)
+                .threads(8)
                 .warmupIterations(1)
                 .measurementIterations(1)
                 .build();
@@ -98,26 +96,26 @@ public class ParallelCollectorsTest {
 
     }
 
-    //    @Benchmark
+        @Benchmark
     public void parallelStream_blocking_cpu(Squarer squarer, Blackhole blackhole) {
         List<BigInteger> list = squarer.list.parallelStream().map(squarer).collect(Collectors.toList());
         blackhole.consume(list);
     }
 
-    //    @Benchmark
+        @Benchmark
     public void parallelCollector_blocking_cpu(Squarer squarer, Blackhole blackhole) {
         Executor executor = new ForkJoinPool(8);
         List<BigInteger> list = squarer.list.parallelStream().collect(ParallelCollectors.parallelToList(squarer, executor)).join();
         blackhole.consume(list);
     }
 
-    //    @Benchmark
+        @Benchmark
     public void parallelStream_blocking_io(Sleeper sleeper, Blackhole blackhole) {
         List<Integer> list = sleeper.list.parallelStream().map(sleeper).collect(Collectors.toList());
         blackhole.consume(list);
     }
 
-    //    @Benchmark
+        @Benchmark
     public void parallelCollector_blocking_io(Sleeper sleeper, Blackhole blackhole) {
         Executor executor = new ForkJoinPool(8);
         List<Integer> list = sleeper.list.parallelStream().collect(ParallelCollectors.parallelToList(sleeper, executor)).join();
@@ -141,17 +139,11 @@ public class ParallelCollectorsTest {
     }
 
     @Benchmark
-    public void parallelCollector_async_cpu(Squarer squarer, Blackhole blackhole) {
-        Executor executor1 = Executors.newFixedThreadPool(2);
-        Executor executor2 = Executors.newFixedThreadPool(2);
-        Executor executor3 = Executors.newFixedThreadPool(2);
+    public void parallelCollector_async_cpu(Squarer squarer, Blackhole blackhole) throws ExecutionException, InterruptedException {
+        Executor executor1 = ForkJoinPool.commonPool();
         CompletableFuture<List<BigInteger>> list1 = squarer.list.parallelStream().collect(ParallelCollectors.parallelToList(squarer.andThen(squarer.plusTwo), executor1));
-        CompletableFuture<List<BigInteger>> list2 = squarer.list.parallelStream().collect(ParallelCollectors.parallelToList(squarer.andThen(squarer.timesFive), executor2));
-        CompletableFuture<List<BigInteger>> list3 = squarer.list.parallelStream().collect(ParallelCollectors.parallelToList(squarer.andThen(squarer.minusHundred), executor3));
-        while (!(list1.isCompletedExceptionally() && list2.isCompletedExceptionally() && list3.isCompletedExceptionally())) {}
-        blackhole.consume(list1.join());
-        blackhole.consume(list2.join());
-        blackhole.consume(list3.join());
+        list1.get();
+        blackhole.consume(list1.get());
     }
 
 }
