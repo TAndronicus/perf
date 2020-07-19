@@ -92,6 +92,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <artifactId>eclipse-collections</artifactId>
             <version>10.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.10.3</version>
+        </dependency>
     </dependencies>
 
     <properties>
