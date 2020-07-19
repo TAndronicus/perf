@@ -1,4 +1,4 @@
-package jb;
+package jb.collections;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.infra.Blackhole;
@@ -10,11 +10,11 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class VavrDataStructuresTest {
+public class VavrCollectionPopulationTest {
 
     public static void main(String[] args) throws RunnerException {
         Options options = new OptionsBuilder()
-                .include(VavrDataStructuresTest.class.getSimpleName())
+                .include(VavrCollectionPopulationTest.class.getSimpleName())
                 .forks(1)
                 .threads(8)
                 .warmupIterations(1)

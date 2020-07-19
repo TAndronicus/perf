@@ -1,4 +1,4 @@
-package jb;
+package jb.collections;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.collections.impl.list.mutable.FastList;

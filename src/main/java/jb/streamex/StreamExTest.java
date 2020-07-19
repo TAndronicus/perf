@@ -1,7 +1,6 @@
-package jb;
+package jb.streamex;
 
 import one.util.streamex.EntryStream;
-import one.util.streamex.IntStreamEx;
 import one.util.streamex.StreamEx;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
@@ -35,7 +34,7 @@ public class StreamExTest {
     @State(Scope.Benchmark)
     public static class Provider {
 
-        Map<Integer, String> map = new HashMap(){{
+        Map<Integer, String> map = new HashMap() {{
             put(1, "one");
             put(2, "two");
             put(3, "three");
